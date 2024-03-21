@@ -246,8 +246,109 @@ while keeping every other at its default value.
 
 On Figure~\ref{fig:param-var}, we see that the probability of failure curve
 has a similar shape for each parameter. The plots of the right column are zooms
-on the zones of highest variance between curves, with $U_d \in [0.5 \text{mm}, 0.7 \text{mm}]$. $H_W$ has the lowest
-probability of failure
+on the zones of highest variance between curves, with $U_d \in [0.5 \text{mm}, 0.7 \text{mm}]$.
+On these zooms, all $P_f$ curves are approximately linear, with same slope
+$\frac{\Delta P_f}{\Delta U_d} \sim \frac{72-48}{0.7-0.5} = 120 \%.mm^{-1}$.
+Only the offsets at a given displacement $u_d$ differ between parameters variations $v_1,v_2 \in \{\pm 20\%, 0\%\}$ ie
+$|P_{f,v_1}(u_d) - P_{f,v_2}(u_d)|$.
+Variating $H_W$ by $\pm 20\%$ induces the smallest variation of $P_f$, of $\sim 1\%$,
+where for $N_R$ and $H$, $\Delta P_f \sim 5\%$.
+Therefore $H$ and $N_R$ are the 2 most impactful parameters on the failure probability.
+The lower the notch radius and the higher the height, the higher the failure
+probability. But if one industrial operator should choose to focus only
+on one parameter, I would advice to focus on $H$ that is simpler to
+adjust than $N_R$, eventhough the latter seem more dangerous, because
+the failure probability increases as $N_R$ diminishes, which makes
+the notch harder to spot.
+
+\section{The Beremin Model}
+
+A difficulty link to estimating the failure probability is that failure
+sometimes appear eventhough the applied stress is below the yield value
+of the material, because there were defects and cracks in it. The Beremin
+model focus on those local micromechanisms.
+
+The idea of the Beremin model relies on $2$ main assumption.
+The first states that microcraks appear dut to inhomogeneous plastic
+deformation in grains, the second models the propagation of those
+micracks with the stress normal to their planes exceeding a
+critical stress $\sigma_c$. This value is often approximated for
+a microcrak of length $l_0$ by:
+\begin{equation}
+    \sigma_c = \sqrt{\frac{2E\gamma}{\pi(1-\nu^2)l_0}}
+\end{equation}
+
+The local approach is to discretize the stressed volume $V_p$ that
+becomes plastic into $n$ smaller ones of volume $V_0$, mutually independant
+and each containing a notch.
+It is assumed the general stressed region fails if and
+only if one of its subregion fails, and the failure will appear
+at the longest microcrak.
+Given the probability distribution of the crack within one small volume :$\mathbb{P}_{crack}$,
+the probability of failure under stress $\sigma$ in this volume is the probability to find a
+crack longer than a critical length $l_c$ linked to a critical stress:
+\begin{equation}
+    \mathbb{P}_{V_0,fail}(\sigma) = \displaystyle \int_{l_c}^{+\infty} \mathbb{P}_{crack}(l_0)d0 = \left(\frac{\sigma}{\sigma_u}\right)^m
+\end{equation}
+
+Where $m$ and $\sigma_u$ are constant. we then find the overall
+probability of failure:
+\begin{equation}
+    P_{f} = 1 - \exp\left(-\left(\frac{\sigma_w}{\sigma_u}\right)^m\right)
+\end{equation}
+
+Where $\sigma_w = \displaystyle \left( \frac{1}{V_0} \int_{V_p} \sigma_{I,p}^m \right)^{\frac{1}{m}}$
+represents a mean local stress among all subvolumes.
+
+The $2$ Beremin parameters $m$ and $\sigma_u$ have specific influence on $P_f$:
+$m$ is linked to the distribution of length of microcraks. Beremin originally
+used $ \mathbb{P}_{crac}(l_0)dl_0 = \frac{\alpha}{l_0^{\beta}}$ with
+$\beta = \frac{m}{2} + 1$. To assess its impact on $P_f$, we can
+assume $\sigma_w$ is approximately constant when $m$ varies, then
+an increase of $m$ increases $P_f$ if $\sigma_w > \sigma_u$ and
+decreases it if $\sigma_w < \sigma_u$. For $\sigma_u$, its increase
+induces a decrease of $P_f$.
+Those relations are intuitive if we interpret $m$ as the number of
+subzones of defects in the stressed zone, and $\sigma_u$ a stress linked
+to the critical $\sigma_c$: increasing this threshold is equivalent
+to say the material is more resistant to fracture, where increasing
+the number of defects increases its instability, and the probability
+of failure when the local stress exceeds the critical threshold.
+
+When we look at the results of simulations on Figure~\ref{fig:var-m-sigu}, we see the trend that $m$
+shifts the curve of $P_f$ to the right, without noticeably changing
+the slope, probably because the variation of $\sigma_w$ w.r.t $m$ must
+be considered. As expected, a $\sigma_u$ reduces the slope in the
+linear part.
+
+\begin{figure}[H]
+    \centering
+    \subfloat[Probability of failure for various $m$.]{\includegraphics[width=0.45\textwidth]{p4_pf_ud_m.png}}
+    \hfill
+    \subfloat[Probability of failure for various $\sigma_u$.]{\includegraphics[width=0.45\textwidth]{p4_pf_ud_sigu.png}}
+    \label{fig:var-m-sigu}
+\end{figure}
+
+
+We wish now to find $m$ and $\sigma_u$ for a given material, for which
+we experimentally statistics of failure $P_f$ for load $u_d$.
+Because the FEM model has long computation time, a regression approach
+will be very time consuming.
+In fact, one simulation that computes
+$u_d,P_f$ given $m,\sigma_u$ takes $\sim 1$ minute.
+Therefore it is preferable to adjust manually those parametres, knowing
+their influence as explained before. Pretty quickly a satisfying
+estimation has been found on Figure~\ref{fig:estim-m-sigu}.
+
+The mean square error of the estimation interpolated on the experimental
+values of $u_d$ is $\displaystyle \sum_{u_{d,exp}}\left(P_{f,exp}(u) - P_{f,sim}(u)\right)^2 = 10.14$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\textwidth]{p4_m_sig_estim2.png}
+    \caption{Observed $P_f(u_d)$ (blue dots). Estimated $P_f(u_d)$ with FEM method (blue curve) and \\ $m=15,\sigma_u=1830$.}
+    \label{fig:estim-m-sigu}
+\end{figure}
 
 %----------------------------------------------------------------------------------------
 %	METHODS
