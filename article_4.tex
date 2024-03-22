@@ -70,9 +70,9 @@ BCOR5mm, % Binding correction
 
 \tableofcontents % Print the table of contents
 
-\listoffigures % Print the list of figures
+% \listoffigures % Print the list of figures
 
-\listoftables % Print the list of tables
+% \listoftables % Print the list of tables
 
 %----------------------------------------------------------------------------------------
 %	ABSTRACT
@@ -82,9 +82,9 @@ BCOR5mm, % Binding correction
 %	AUTHOR AFFILIATIONS
 %----------------------------------------------------------------------------------------
 
-\let\thefootnote\relax\footnotetext{* \textit{Department of Biology, University of Examples, London, United Kingdom}}
+% \let\thefootnote\relax\footnotetext{* \textit{Department of Biology, University of Examples, London, United Kingdom}}
 
-\let\thefootnote\relax\footnotetext{\textsuperscript{1} \textit{Department of Chemistry, University of Examples, London, United Kingdom}}
+% \let\thefootnote\relax\footnotetext{\textsuperscript{1} \textit{Department of Chemistry, University of Examples, London, United Kingdom}}
 
 %----------------------------------------------------------------------------------------
 
@@ -96,13 +96,12 @@ BCOR5mm, % Binding correction
 
 \section{Introduction}
 Goal of this work is to analyze the conditions under which fractures
-and crack propagate in materials. It relies on the theory of fracture mechanics.
+and cracks propagate in materials. It relies on the theory of fracture mechanics.
 It has many important applications, especially in the industry field,
 in which built mechanical components often have flaws.
 The probability of the failure of the material during
 its operation must be assessed.
 To that end, engineers do a damage tolerance analysis.
-
 The Charpy impact test is commonly used to study fractures.
 Its functioning is quite simple: a striker is dropped and hits a
 notched tensile, the difference between the final and initial heights
@@ -116,38 +115,41 @@ to fracture.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\columnwidth]{mouton_charpy.png}
+    \caption{Charpy impact machine picture and a sketch explaining how it works.}
 \end{figure}
 
 \section{Preliminary Finite Element Model}
 
 We present here a FEM model of the Charpy specimen.
-
+Here it is a tensile with dimensions $L=55 \text{mm}, W = 10 \text{mm}, H = 10 \text{mm}$.
 It has an
 isotropic elastic behavior under low strain or stress, with a
 Young Modulus $E=208 \text{GPa}$ which is standard for steel.
-It then has a isotropic non linear plastic behavior ruled by:
-$ \sigma = R_0 + Q(1 - \exp^{-bp}) $ where $p$ is the cumulative
-plastic deformation $\displaystyle p = \int_{t=0}^{t=t*}\varepsilon_{p}(t)dt$.
+It then has a isotropic non linear plastic behavior ruled by the following yield
+function:
+$ f(\sigma, p) = \sigma_{eq} - R_0 - Q(1 - \exp^{-bp}) $ where $p$ is the cumulative
+plastic deformation $\displaystyle p = \int_{t=0}^{t=t*}\varepsilon_{p}(t)dt$,
+and the fitted parameters are $R_0=510 \text{MPa}, Q = 314.62 \text{MPa}, b = 16.13$.
 
-To model the transition in plastic regime, the \textit{Von Mises} criterion
-is used. It relies on the \textit{Von Mises} equivalent stress:
+To model the plastic regime, the \textit{Von Mises} equivalent stress
+is used:
 
 \begin{equation}
     \sigma_{eq} = \sqrt{\frac{1}{2}\left((\sigma_1 - \sigma_2)^2+(\sigma_2 - \sigma_3)^2+(\sigma_3 - \sigma_1)^2\right)}
 \end{equation}
 
-Lastly, we use the Beremin model to predict the evolution of the crack.
+Where $\sigma_i$ are the principal stresses.
+Lastly, the Beremin model is used to predict the evolution of the crack.
 Concerning the boundary conditions, anvils on which the specimen lies
-are immobile, the striker has a prescribed vertical downward movement at
+are immobile, the striker has a prescribed vertical downward movement,
+also called loas, at
 constant speed $\dot{u}_2 = -1 mm.s^{-1}$. The ligament, ie the nodes
-in the vertical plane cutting the specimen in half, are also immobile
+of the FEM mesh in the vertical plane cutting the specimen in half, are also immobile
 along the horizontal axis.
 While this assumption is not physically justified, it is useful to
-shrink the problem size to only the right half of all aforementioned
-objects, because the problem can be considered symmetric along the ligament.
+shrink the problem's size to only the right half of all aforementioned
+objects, because the problem can be considered symmetrical along the ligament.
 
-
-The first simulation returned an error during the last iterations.
 
 \begin{figure}[ht]
     \centering
@@ -162,6 +164,7 @@ The first simulation returned an error during the last iterations.
     \label{fig:res_exp_1}
 \end{figure}
 
+The first simulation returned an error during the last iterations.
 We observe a concentration of high \textit{Von Mises} stress
 around the notch and near the striker, $\sigma_{eq} > 700 \text{MPa}$, and
 also a bit of
@@ -193,14 +196,14 @@ previous experiment with $40 \mu m, 10 \mu m, 4 \mu m$:
     \subfloat[Relation first principal stress - y coordinate]{\includegraphics[width=0.45\textwidth]{p2_sig1_y.png}\label{fig:firstprin-y}}
     \hfill
     \subfloat[Relation cumulative plastic deformation - y coordinate]{\includegraphics[width=0.45\textwidth]{p2_epcum_y.png}\label{fig:epcum-y}}
-    \caption{Comparison of mesh refinements}
+    \caption{Comparison of mesh refinements.}
     \label{fig:res_exp_refine}
 \end{figure}
 
-With these finer mesh, the previous simulation now converges.
+With these finer meshes, the previous simulation now converges.
 Results on Figures~\ref{fig:force-displ} and ~\ref{fig:firstprin-y} quite differ between $40 \mu m$
-and the $2$ smaller sizes, meaning we gain some model accuracy with refinement.
-However, $10 \mu m$ and $4 \mu m$ have similar results for our precision,
+and the $2$ smaller sizes, meaning some model accuracy is gained with refinement.
+However, $10 \mu m$ and $4 \mu m$ have similar results for the desired precision,
 but the $10 \mu m$ simulation was $15$ times faster, therefore it is
 more interesting for us to choose it instead of the smallest size.
 We see again on Figures~\ref{fig:firstprin-y} and ~\ref{fig:epcum-y} the concentration
@@ -214,8 +217,8 @@ of stress and plastic deformation near the notch ie in the low $y$ zones.
     \caption{Considered geometric parameters.}
 \end{wrapfigure}
 
-Now that we have a more adapted mesh and converging simulations,
-we wish to assess the dependency of the geometry of the Charpy specimen
+Now that a more adapted mesh is found and simulations converge,
+it is interesting to assess the dependency of the geometry of the Charpy specimen
 in its probability of failure. Numerical simulation is here useful
 to run multiple Charpy tests, that in reality are hard to set up.
 The considered parameters are the notch radius $N_R$, the height $H$
@@ -255,68 +258,111 @@ Variating $H_W$ by $\pm 20\%$ induces the smallest variation of $P_f$, of $\sim 
 where for $N_R$ and $H$, $\Delta P_f \sim 5\%$.
 Therefore $H$ and $N_R$ are the 2 most impactful parameters on the failure probability.
 The lower the notch radius and the higher the height, the higher the failure
-probability. But if one industrial operator should choose to focus only
-on one parameter, I would advice to focus on $H$ that is simpler to
+probability.
+Such a result can be misleading at first sight, but recall that
+$N_R$ is measured at a fixed height, and therefore
+a smaller $N_R$ is linked to a sharper angle at the origin of the notch.
+Consequently, sharp geometries tend to concentrate the stress on them and therefore
+increase the probability of failure.
+For $H$, a possible interpretation is the increase of the population
+of defects with the height.
+But if one industrial operator should choose to focus only
+on one parameter, $H$ seems simpler to
 adjust than $N_R$, eventhough the latter seem more dangerous, because
 the failure probability increases as $N_R$ diminishes, which makes
 the notch harder to spot.
 
 \section{The Beremin Model}
 
-A difficulty link to estimating the failure probability is that failure
+A difficulty linked to estimating the failure probability is that failure
 sometimes appear eventhough the applied stress is below the yield value
-of the material, because there were defects and cracks in it. The Beremin
-model focus on those local micromechanisms.
+of the material, because there were defects and cracks in it at a
+microscopic scale.
+The Beremin model focuses on linking a macroscopic fracture to those micromechanisms.
 
-The idea of the Beremin model relies on $2$ main assumption.
-The first states that microcraks appear dut to inhomogeneous plastic
-deformation in grains, the second models the propagation of those
-micracks with the stress normal to their planes exceeding a
-critical stress $\sigma_c$. This value is often approximated for
-a microcrak of length $l_0$ by:
-\begin{equation}
-    \sigma_c = \sqrt{\frac{2E\gamma}{\pi(1-\nu^2)l_0}}
+The idea of the Beremin model relies on $2$ main assumptions.
+The first states that microcracks appear due to a plastic
+deformation in grains, that is inhomogeneous because of initial defects.
+The second models the propagation of those microcracks with a
+probabilistic failure parameter, $\sigma_w$ exceeding a critical value.
+To infer a macroscopic fracture from the microscopic state,
+Beremin's model relies on the weakest link theory stating that the latter
+occurs when a microcracks is submitted to the Griffith stress $\sigma_c$.
+Equivalently, the fracture occurs when a microcrack reaches a length of
+$l_{0c} = 2E\gamma_s /(\delta\sigma_c^2)$ where $\delta \sim 1$ is constant
+and $\gamma_s$ is the effective surface energy.
+As mathematical tools, Beremin relies on a generalized extremum law
+of probability called the Weibull distribution.
+For the initial distribution $\mathbb{P}_{crack}$ of defects,
+a power law is commonly used, leading to the probability of
+failure of an element of volume $V_0$ under a stress $\sigma$:
+
+\begin{equation} \label{eq:pfail}
+    \mathbb{P}_{V_0,fail}(\sigma) = \displaystyle \int_{l_{0c}}^{+\infty} \mathbb{P}_{crack}(l_0)d0
+    = \int_{l_{0c}}^{+\infty} \frac{\alpha}{l_0^{\beta}}dl_0
+    % = \left(\frac{\sigma}{\sigma_u}\right)^m
 \end{equation}
 
-The local approach is to discretize the stressed volume $V_p$ that
-becomes plastic into $n$ smaller ones of volume $V_0$, mutually independant
-and each containing a notch.
-It is assumed the general stressed region fails if and
-only if one of its subregion fails, and the failure will appear
-at the longest microcrak.
-Given the probability distribution of the crack within one small volume :$\mathbb{P}_{crack}$,
-the probability of failure under stress $\sigma$ in this volume is the probability to find a
-crack longer than a critical length $l_c$ linked to a critical stress:
+Where $\alpha,\beta$ are material constraints.
+By only considering plane strain condition, the probability of
+failure is calculated with:
+
 \begin{equation}
-    \mathbb{P}_{V_0,fail}(\sigma) = \displaystyle \int_{l_c}^{+\infty} \mathbb{P}_{crack}(l_0)d0 = \left(\frac{\sigma}{\sigma_u}\right)^m
+    P_{f}
+    = 1 - \exp\left(- \frac{ \displaystyle  \frac{1}{V_0} \int_{V_p} \sigma_{I}^m dV }{\sigma_u^m}\right)
+    = 1 - \exp\left(-\left(\frac{\sigma_w}{\sigma_u}\right)^m\right)
 \end{equation}
 
-Where $m$ and $\sigma_u$ are constant. we then find the overall
-probability of failure:
-\begin{equation}
-    P_{f} = 1 - \exp\left(-\left(\frac{\sigma_w}{\sigma_u}\right)^m\right)
-\end{equation}
+Where $m = 2\beta - 1$ is the Weibull shape factor, $\sigma_w = \displaystyle \left( \frac{1}{V_0} \int_{V_p} \sigma_{I,p}^m \right)^{\frac{1}{m}}$
+is the Weibull stress, $V_p$ the plastic volume, $\sigma_I(V)$ the principal
+stress on the local volume $V$
+and $\sigma_u = (m/2\alpha)^{\frac{1}{m}}\sqrt{2E\gamma_s\delta}$
+is the Weibull scale factor.
 
-Where $\sigma_w = \displaystyle \left( \frac{1}{V_0} \int_{V_p} \sigma_{I,p}^m \right)^{\frac{1}{m}}$
-represents a mean local stress among all subvolumes.
 
-The $2$ Beremin parameters $m$ and $\sigma_u$ have specific influence on $P_f$:
-$m$ is linked to the distribution of length of microcraks. Beremin originally
-used $ \mathbb{P}_{crac}(l_0)dl_0 = \frac{\alpha}{l_0^{\beta}}$ with
-$\beta = \frac{m}{2} + 1$. To assess its impact on $P_f$, we can
+% The local approach is to discretize the stressed volume $V_p$ that
+% becomes plastic into $n$ smaller ones of volume $V_0$, mutually independant
+% and each containing a notch.
+% It is assumed the general stressed region fails if and
+% only if one of its subregion fails, and the failure will appear
+% at the longest microcrack.
+% Given the probability distribution of the crack within one small volume :$\mathbb{P}_{crack}$,
+% the probability of failure under stress $\sigma$ in this volume is the probability to find a
+% crack longer than a critical length $l_c$ linked to a critical stress:
+
+% Where $m$ and $\sigma_u$ are constant. we then find the overall
+% probability of failure:
+% \begin{equation}
+%     P_{f} = 1 - \exp\left(-\left(\frac{\sigma_w}{\sigma_u}\right)^m\right)
+% \end{equation}
+
+% represents a mean local stress among all subvolumes.
+
+The $2$ Beremin parameters $m$ and $\sigma_u$
+have specific influence on $P_f$:
+$m$ is linked to the distribution of length of microcracks (Eq~\ref{eq:pfail}).
+Its increase favors smaller lengths of defects (with $\alpha^\frac{1}{m}$ as reference of length).
+% Beremin originally
+% used $ \mathbb{P}_{crac}(l_0)dl_0 = \frac{\alpha}{l_0^{\beta}}$ with
+% $\beta = \frac{m}{2} + 1$. 
+To assess its impact on $P_f$, we can
 assume $\sigma_w$ is approximately constant when $m$ varies, then
 an increase of $m$ increases $P_f$ if $\sigma_w > \sigma_u$ and
 decreases it if $\sigma_w < \sigma_u$. For $\sigma_u$, its increase
-induces a decrease of $P_f$.
-Those relations are intuitive if we interpret $m$ as the number of
-subzones of defects in the stressed zone, and $\sigma_u$ a stress linked
-to the critical $\sigma_c$: increasing this threshold is equivalent
-to say the material is more resistant to fracture, where increasing
-the number of defects increases its instability, and the probability
-of failure when the local stress exceeds the critical threshold.
+induces a decrease of $P_f$,
+it is a kind of a macroscopic stress threshold under which
+the material can resist.
 
-When we look at the results of simulations on Figure~\ref{fig:var-m-sigu}, we see the trend that $m$
-shifts the curve of $P_f$ to the right, without noticeably changing
+% Those relations are intuitive if we interpret $m$ as the number of
+% subzones of defects in the stressed zone, and $\sigma_u$ a stress linked
+% to the critical $\sigma_c$: increasing this threshold is equivalent
+% to say the material is more resistant to fracture, where increasing
+% the number of defects increases its instability, and the probability
+% of failure when the local stress exceeds the critical threshold.
+
+% ~\ref{fig:var-m-sigu}
+Looking at the results of simulations on the Figure below, the trend that $m$
+shifts the curve of $P_f$ to the right is visible, without noticeably changing
 the slope, probably because the variation of $\sigma_w$ w.r.t $m$ must
 be considered. As expected, a $\sigma_u$ reduces the slope in the
 linear part.
@@ -342,157 +388,88 @@ estimation has been found on Figure~\ref{fig:estim-m-sigu}.
 
 The mean square error of the estimation interpolated on the experimental
 values of $u_d$ is $\displaystyle \sum_{u_{d,exp}}\left(P_{f,exp}(u) - P_{f,sim}(u)\right)^2 = 10.14$.
+An optimisation algorithm that minimized the mean square error gave as solutions $m_{opt}=16$ and $\sigma_{u,opt}=1800$
+and an error $e_{opt} \sim 4$, so quite lower as the previous estimation.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.45\textwidth]{p4_m_sig_estim2.png}
-    \caption{Observed $P_f(u_d)$ (blue dots). Estimated $P_f(u_d)$ with FEM method (blue curve) and \\ $m=15,\sigma_u=1830$.}
+    \caption{Observed $P_f(u_d)$ (blue dots). Estimated $P_f(u_d)$ with FEM method (blue curve) and $m=15,\sigma_u=1830$.}
     \label{fig:estim-m-sigu}
 \end{figure}
+
+\section{Effect of The Temperature}
+
+An interesting question that occurs frequently in manufacturing is the influence of the temperature on the
+failure probability. Multiples simulation have been conducted to estimate the variation of $\sigma_w$ and $P_f$
+with different temperatures. Results are in Figure~\ref{fig:estim-simw-temp}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\columnwidth]{p5_temp_sigu_m.png}
+    \caption{Variations of $\sigma_w$ and $P_f$
+        with different temperatures}
+    \label{fig:estim-simw-temp}
+\end{figure}
+
+The curves of $u_d \rightarrow \sigma_w(u_d)$ have same linear slope
+near the origin, and different asymptotic straight lines. As $T$
+decreases, the offset and the slope of those lines increases,
+meaning that it increases the local stress on the plastic volume.
+A possible interpretation is that lowering $T$ slow down the particles'
+movements and therefore hinders the material's deformation in response
+to the applied stress, as it makes the material more brittle. Similarly, lowering $T$ shift the curve of
+$P_f$ to the left and increases the slope, meaning it increases the
+chances of failure for all load displacements $u_d$.
+
+\section{Conclusion}
+
+In this work, a Finite Element Model of the Charpy impact test
+has been used in order to assess the influence of various parameters on the resistance
+of a notch material, ie its ability not to fracture when it is subject
+to a stress near the notch. Firstly the mesh near
+the highly stressed zones had te be refined in order to have convergent simulations,
+and then a sensitivity analysis of $3$ geometrical parameters:
+$N_R$ the notch radius, $H$ the height of the specimen and $H_W$ half
+of its width, on the probability of failure $P_f$ has been conducted :
+. As a result, both $N_R$ and $H$ had a significant
+influence on the failure probability, and therefore should be
+watched in an industrial context.
+The study has then assessed the effect of the $2$ main parameters of
+the Beremin Model, a local probabilitic approach to fracture model that links the fracture of the
+material to the lengths of its microcracks.
+CCL Beremin.
+
+Lastly the increase of $P_f$ with a lowering of the temperature has been
+observed on simulations and the induced hindering on the
+movements of particles has been given as an interpretation.
+
+As a sequel of this work, a study on the influence on the resistance
+of context-specific environmental
+properties to which the material is exposed can be interesting, especially
+on the irridiation levels, that typically occur in nuclear infrastructures.
+Multiple studies focus on this issue and link it
+to the material's composition. As an example, levels of copper,
+nickel and phosphorus matter when one studies the irradiation effects.
+
+One limitation of the Beremin Model used here is its inability to model
+inhomogeneities in the material. To that end, an extended version,
+called the bi-modal Weibull distribution has been developped.
+
 
 %----------------------------------------------------------------------------------------
 %	METHODS
 %----------------------------------------------------------------------------------------
 
-\section{Methods}
-
-\lipsum[5] % Dummy text
-
-\begin{enumerate}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-    \item First item in a list
-    \item Second item in a list
-    \item Third item in a list
-\end{enumerate}
-
-%------------------------------------------------
-
-\subsection{Paragraphs}
-
-\lipsum[6] % Dummy text
-
-\paragraph{Paragraph Description} \lipsum[7] % Dummy text
-
-\paragraph{Different Paragraph Description} \lipsum[8] % Dummy text
-
-%------------------------------------------------
-
-\subsection{Math}
-
-\lipsum[4] % Dummy text
-
-\begin{equation}
-    \cos^3 \theta =\frac{1}{4}\cos\theta+\frac{3}{4}\cos 3\theta
-    \label{eq:refname2}
-\end{equation}
-
-\lipsum[5] % Dummy text
-
-\begin{definition}[Gauss]
-    To a mathematician it is obvious that
-    $\int_{-\infty}^{+\infty}
-        e^{-x^2}\,dx=\sqrt{\pi}$.
-\end{definition}
-
-\begin{theorem}[Pythagoras]
-    The square of the hypotenuse (the side opposite the right angle) is equal to the sum of the squares of the other two sides.
-\end{theorem}
-
-\begin{proof}
-    We have that $\log(1)^2 = 2\log(1)$.
-    But we also have that $\log(-1)^2=\log(1)=0$.
-    Then $2\log(-1)=0$, from which the proof.
-\end{proof}
-
-%----------------------------------------------------------------------------------------
-%	RESULTS AND DISCUSSION
-%----------------------------------------------------------------------------------------
-
-\section{Results and Discussion}
-
-Reference to Figure~\vref{fig:gallery}. % The \vref command specifies the location of the reference
-
-\begin{figure}[tb]
-    \centering
-    \includegraphics[width=0.5\columnwidth]{GalleriaStampe}
-    \caption[An example of a floating figure]{An example of a floating figure (a reproduction from the \emph{Gallery of prints}, M.~Escher,\index{Escher, M.~C.} from \url{http://www.mcescher.com/}).} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
-    \label{fig:gallery}
-\end{figure}
-
-\lipsum[10] % Dummy text
-
-%------------------------------------------------
-
-\subsection{Subsection}
-
-\lipsum[11] % Dummy text
-
-\subsubsection{Subsubsection}
-
-\lipsum[12] % Dummy text
-
-\begin{description}
-    \item[Word] Definition
-    \item[Concept] Explanation
-    \item[Idea] Text
-\end{description}
-
-\lipsum[12] % Dummy text
-
-\begin{itemize}[noitemsep] % [noitemsep] removes whitespace between the items for a compact look
-    \item First item in a list
-    \item Second item in a list
-    \item Third item in a list
-\end{itemize}
-
-\subsubsection{Table}
-
-\lipsum[13] % Dummy text
-
-\begin{table}[hbt]
-    \caption{Table of Grades}
-    \centering
-    \begin{tabular}{llr}
-        \toprule
-        \multicolumn{2}{c}{Name}       \\
-        \cmidrule(r){1-2}
-        First name & Last Name & Grade \\
-        \midrule
-        John       & Doe       & $7.5$ \\
-        Richard    & Miles     & $2$   \\
-        \bottomrule
-    \end{tabular}
-    \label{tab:label}
-\end{table}
-
-Reference to Table~\vref{tab:label}. % The \vref command specifies the location of the reference
-
-%------------------------------------------------
-
-\subsection{Figure Composed of Subfigures}
-
-Reference the figure composed of multiple subfigures as Figure~\vref{fig:esempio}. Reference one of the subfigures as Figure~\vref{fig:ipsum}. % The \vref command specifies the location of the reference
-
-\lipsum[15-18] % Dummy text
-
-\begin{figure}[tb]
-    \centering
-    \subfloat[A city market.]{\includegraphics[width=.45\columnwidth]{Lorem}} \quad
-    \subfloat[Forest landscape.]{\includegraphics[width=.45\columnwidth]{Ipsum}\label{fig:ipsum}} \\
-    \subfloat[Mountain landscape.]{\includegraphics[width=.45\columnwidth]{Dolor}} \quad
-    \subfloat[A tile decoration.]{\includegraphics[width=.45\columnwidth]{Sit}}
-    \caption[A number of pictures.]{A number of pictures with no common theme.} % The text in the square bracket is the caption for the list of figures while the text in the curly brackets is the figure caption
-    \label{fig:esempio}
-\end{figure}
-
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
-\renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
+% \renewcommand{\refname}{\spacedlowsmallcaps{References}} % For modifying the bibliography heading
 
-\bibliographystyle{unsrt}
+% \bibliographystyle{unsrt}
 
-\bibliography{sample.bib} % The file containing the bibliography
+% \bibliography{sample.bib} % The file containing the bibliography
 
 %----------------------------------------------------------------------------------------
 
